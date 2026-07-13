@@ -11,13 +11,11 @@
         
         #beer-wrapper { position: relative; z-index: 2; filter: drop-shadow(0 0 10px rgba(241, 196, 15, 0.3)); }
         
-        /* Pena sa animacijom "kipuće" pene */
         #foam { fill: #ffffff; opacity: 0; }
         
         .drop { position: absolute; background: #f1c40f; border-radius: 50%; opacity: 0; z-index: 1; box-shadow: 0 0 5px #f39c12; }
         
-        /* Dodato white-space: pre-line za prelom reda */
-        .text-section { font-size: 2.5rem; font-weight: 800; text-align: center; margin-top: 50px; letter-spacing: 1px; white-space: pre-line; }
+        .text-section { font-size: 2.5rem; font-weight: 800; text-align: center; margin-top: 50px; letter-spacing: 1px; }
     </style>
 </head>
 <body>
@@ -31,11 +29,8 @@
                         <stop offset="100%" stop-color="#d35400" />
                     </linearGradient>
                 </defs>
-                <!-- Telo piva -->
                 <rect x="20" y="30" width="60" height="110" rx="5" ry="5" fill="url(#beerGradient)" />
-                <!-- Staklo (providni sloj) -->
                 <rect x="20" y="30" width="60" height="110" rx="5" ry="5" fill="white" fill-opacity="0.1" stroke="white" stroke-width="2"/>
-                <!-- Pena -->
                 <path id="foam" d="M 18 30 A 30 10 0 1 0 82 30 A 30 10 0 1 0 18 30" />
             </svg>
         </div>
@@ -47,20 +42,25 @@
         const stage = document.getElementById('stage');
         const textElement = document.getElementById('text');
         
-        // Tekst sa traženim prelomom reda
-        const message = "Kume, hoćemo li na pivo?\n\nŽedan sam ko pustinja! 🍺";
-        
+        // Poruka sa <br> za prelom reda
+        const message = "Kume, hoćemo li na pivo?<br>Žedan sam ko pustinja! 🍺";
         let textIndex = 0;
+
         function typeWriter() {
+            // Provera za tag za novi red
+            if (message.substring(textIndex, textIndex + 4) === "<br>") {
+                textElement.innerHTML += "<br>";
+                textIndex += 4;
+            }
+            
             if (textIndex < message.length) {
-                textElement.textContent += message.charAt(textIndex);
+                textElement.innerHTML += message.charAt(textIndex);
                 textIndex++;
                 setTimeout(typeWriter, 100);
             }
         }
         typeWriter();
 
-        // Napredna GSAP animacija
         const tl = gsap.timeline({ repeat: -1, repeatDelay: 1.5 });
 
         tl.fromTo("#beer-wrapper", { y: -300 }, { y: 0, duration: 1, ease: "bounce.out" })
