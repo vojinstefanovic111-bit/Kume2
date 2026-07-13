@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Na pivo sa kumom</title>
+    <style>
+        body {
+            background-color: #2c3e50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            color: white;
+            font-family: sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            position: relative;
+            width: 220px;
+            height: 320px; /* Dodato malo prostora */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .beer-svg {
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        #bubbleCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 220px;
+            height: 320px;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .text-section {
+            font-size: 1.5rem;
+            text-align: center;
+            font-weight: bold;
+            white-space: pre-line;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            padding: 20px;
+            z-index: 3;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- SVG sa ravnim dnom -->
+        <svg class="beer-svg" viewBox="0 0 100 180">
+            <!-- Telo čaše - sada sa ravnim dnom (L 25 140 L 75 140) -->
+            <path d="M 25 20 L 25 140 L 75 140 L 75 20 Z" fill="#f1c40f" stroke="rgba(255, 255, 255, 0.4)" stroke-width="2"/>
+            <circle cx="50" cy="25" r="20" fill="white"/>
+            <circle cx="35" cy="30" r="15" fill="white"/>
+            <circle cx="65" cy="30" r="15" fill="white"/>
+            <!-- Bela providna drška -->
+            <path d="M 75 50 Q 100 80 75 110" fill="none" stroke="rgba(255, 255, 255, 0.7)" stroke-width="8" stroke-linecap="round"/>
+        </svg>
+
+        <canvas id="bubbleCanvas" width="220" height="320"></canvas>
+    </div>
+    
+    <div class="text-section" id="text"></div>
+
+    <script>
+        const canvas = document.getElementById('bubbleCanvas');
+        const ctx = canvas.getContext('2d');
+        const textElement = document.getElementById('text');
+        const message = "Kume, \nhoćemo li na pivo?\nŽedan sam ko pustinja! 🍺";
+
+        let bubbles = [];
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            if (Math.random() < 0.15) { 
+                bubbles.push({x: 35 + Math.random() * 30, y: 135, size: Math.random() * 2 + 1});
+            }
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            
+            for (let i = 0; i < bubbles.length; i++) {
+                let b = bubbles[i];
+                let canvasX = (b.x / 100) * canvas.width;
+                let canvasY = (b.y / 180) * canvas.height;
+                
+                ctx.beginPath();
+                ctx.arc(canvasX, canvasY, b.size * 1.5, 0, Math.PI * 2);
+                ctx.fill();
+                
+                b.y -= 0.8; 
+                if (b.y < 40) {
+                    bubbles.splice(i, 1);
+                    i--;
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        let textIndex = 0;
+        function typeWriter() {
+            if (textIndex < message.length) {
+                textElement.textContent += message.charAt(textIndex);
+                textIndex++;
+                setTimeout(typeWriter, 50);
+            }
+        }
+
+        animate();
+        typeWriter();
+    </script>
+</body>
+</html>
